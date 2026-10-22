@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
-export const runtime = "nodejs";
+
 
 // GET: Search, filter and paginate return requests
 export async function GET(request) {
