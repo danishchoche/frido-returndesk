@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ReturnDesk
 
-## Getting Started
+ReturnDesk is a Next.js application for creating and viewing customer return requests. It uses PostgreSQL to store return request data.
 
-First, run the development server:
+## Requirements
+
+- Node.js and npm
+- A PostgreSQL database
+
+## Setup
+
+From the `my-app` directory, install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env.local` file in the `my-app` directory and configure the database connection:
+
+```env
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
+DB_SSL=false
+```
+
+Replace the connection string with the one for your database. Set `DB_SSL=true` if your provider requires TLS. The app verifies TLS certificates by default. Only set `DB_SSL_REJECT_UNAUTHORIZED=false` if your provider explicitly requires disabling certificate verification.
+
+Do not commit `.env.local` or share its contents; the database URL contains credentials.
+
+## Database Schema
+
+Create the tables and indexes by running `src/lib/schema.sql` against your PostgreSQL database. For example, with `psql`:
+
+```bash
+psql "postgresql://USER:PASSWORD@HOST:5432/DATABASE" -f src/lib/schema.sql
+```
+
+The schema creates `return_requests` and `return_notes`. The API currently uses `return_requests`.
+
+## Run Locally
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## API
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Check the database connection
 
-## Learn More
+```http
+GET /api/db-test
+```
 
-To learn more about Next.js, take a look at the following resources:
+Returns a success response and database timestamp when the connection works.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### List return requests
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```http
+GET /api/returns
+```
 
-## Deploy on Vercel
+Returns unarchived requests, newest first.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Create a return request
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```http
+POST /api/returns
+Content-Type: application/json
+```
+
+Example request body:
+
+```json
+{
+	"order_number": "ORD-1002",
+	"customer_name": "Jordan Lee",
+	"item_name": "Blue jacket",
+	"quantity": 1,
+	"reason": "Damaged"
+}
+```
+
+Allowed reasons are `Damaged`, `Wrong Item`, `Size Issue`, `Not As Described`, and `Changed Mind`. A successful creation returns HTTP `201` with the new request. Invalid input returns `400`; a database error returns `500`.
+
+## Available Scripts
+
+```bash
+npm run dev    # Start the development server
+npm run lint   # Run ESLint
+npm run build  # Build the production app
+npm run start  # Start the production server after building
+```
