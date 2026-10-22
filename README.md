@@ -18,10 +18,7 @@ npm install
 Create a `.env.local` file in the `my-app` directory and configure the database connection:
 
 ```env
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
-DB_SSL=false
-```
-
+DATABASE_URL='postgresql://neondb_owner:npg_K3MECXwAlz4Y@ep-lively-band-b51djb1j-pooler.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
 Replace the connection string with the one for your database. Set `DB_SSL=true` if your provider requires TLS. The app verifies TLS certificates by default. Only set `DB_SSL_REJECT_UNAUTHORIZED=false` if your provider explicitly requires disabling certificate verification.
 
 Do not commit `.env.local` or share its contents; the database URL contains credentials.
